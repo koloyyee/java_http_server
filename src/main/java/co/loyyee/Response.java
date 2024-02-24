@@ -36,9 +36,9 @@ public class Response {
 		addHeader("Content-Length", Integer.toString(body.length()));
 		this.body = body;
 	}
-//	public void addCookie(Cookie cookie) {
-//		addHeader("Set-Cookie", cookie.toString());
-//	}
+	public void addCookie(Cookie cookie) {
+		addHeader("Set-Cookie", cookie.toString());
+	}
 
 	public void send() throws IOException {
 		addHeader("Connect", "Close");
@@ -47,7 +47,7 @@ public class Response {
 		for ( String headerName : headers.keySet()) {
 			Iterator<String > headerValues = headers.get(headerName).iterator();
 			while(headerValues.hasNext()) {
-				out.write((headerName + ": " + this.headers.get(headerName) + "\r\n").getBytes());
+				out.write((headerName + ": " + headerValues.next() + "\r\n").getBytes());
 			}
 		}
 		out.write("\r\n".getBytes());

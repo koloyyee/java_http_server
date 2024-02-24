@@ -42,25 +42,25 @@ public class SocketHandler implements Runnable {
 		OutputStream out = null;
 
 		try {
-//			socket.setSoTimeout(10000);
+			socket.setSoTimeout(10000);
 			in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 			out = socket.getOutputStream();
 
-//			boolean done = false;
+			boolean done = false;
 
-//			while (!done) {
+			while (!done) {
 				Request request = new Request(in);
-//				try {
+				try {
 					if (!request.parse()) {
 						respond(500, "Server Error: unable to parse.", out);
 						return;
 					}
-//				} catch (SocketTimeoutException e) {
-//					break;
-//				}
-//				if ("close".equalsIgnoreCase(request.getHeader("connection"))) {
-//					done = true;
-//				}
+				} catch (SocketTimeoutException e) {
+					break;
+				}
+				if ("close".equalsIgnoreCase(request.getHeader("connection"))) {
+					done = true;
+				}
 
 				/** finding the method from methodHandlers Map<String, Handler>*/
 				boolean foundHandler = false;
@@ -89,9 +89,9 @@ public class SocketHandler implements Runnable {
 						respond(404, "Not Found.", out);
 					}
 				}
-//				request.getHeader("connection");
-//				response.send();
-//			}
+				request.getHeader("connection");
+				response.send();
+			}
 		} catch (IOException e) {
 			System.out.println(e.getMessage());
 		}

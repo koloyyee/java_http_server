@@ -1,8 +1,6 @@
 package co.loyyee;
 
 import java.text.SimpleDateFormat;
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.util.Date;
 
 /**
@@ -20,8 +18,8 @@ import java.util.Date;
  *
  * */
 public class Cookie {
-	private String name;
-	private String value;
+	final private String name;
+	final private String value;
 	private Date expires;
 	private Integer maxAge;
 	private String domain;
