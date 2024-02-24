@@ -45,16 +45,17 @@ public class Log {
 		File logFile = new File(LogFilePath);
 		try {
 			logFile.createNewFile();
-		} catch (IOException e) {
-			logger.warning(e.getMessage());
-		}
-		try (BufferedWriter bufW = new BufferedWriter(new FileWriter(logFile, append));) {
-			for(String line : logs) {
-				bufW.write(line + "\n");
+			try (BufferedWriter bufW = new BufferedWriter(new FileWriter(logFile, append));) {
+				for(String line : logs) {
+					bufW.write(line + "\n");
+				}
+			} catch (IOException e) {
+				logger.warning(e.getMessage());
 			}
 		} catch (IOException e) {
 			logger.warning(e.getMessage());
 		}
+
 	}
 
 }
