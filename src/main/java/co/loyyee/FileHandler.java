@@ -1,13 +1,13 @@
 package co.loyyee;
 
-import co.loyyee.enums.HeaderKey;
-
-import java.io.*;
-import java.util.logging.Logger;
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
 
 import static co.loyyee.enums.HeaderKey.ContentType;
 
 /**
+ * <h3>Step 5</h3>
  *  Responding with a text/html file
  * {@link javax.servlet.http.HttpSession| the HttpSession class}
  * */

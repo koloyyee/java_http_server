@@ -7,14 +7,24 @@ import java.util.Map;
 
 import static co.loyyee.enums.HeaderKey.ContentLength;
 
+/**
+ * HttpInputStream handles POST request
+ * Reads the incoming source, check the byte size and read through them
+ *
+ * Chunking also done here, for detail please visit
+ * @link Reference: at <a href="https://commandlinefanatic.com/cgi-bin/showarticle.cgi?article=art077"> Joshua Davies' Blog - Chunked transfer encoding</a> section.
+ * <hr>
+ * <br>
+ * <p>Chunking -"...the sender is responsible for breaking the data into chunks of known size and prepending each chunk with its length.</p>
+ * The size of the pending chunk is provided as CRLF-delimited ASCII-formatted hexadecimal."</p>
+ *
+ * */
 public class HttpInputStream extends InputStream {
 	private Reader source;
 	private int byteRemaining;
 
 	/**
-	 * Chunking -"...the sender is responsible for breaking the data into chunks of known size and prepending each chunk with its length. The size of the pending chunk is provided as CRLF-delimited ASCII-formatted hexadecimal."
-	 * Joshua Davies did a detail explain on what, why and how to chunk.
-	 * @link Reference: at <a href="https://commandlinefanatic.com/cgi-bin/showarticle.cgi?article=art077"> Chunked transfer encoding</a> section.
+	 *
 	 *
 	 * */
 	private boolean chunked = false;

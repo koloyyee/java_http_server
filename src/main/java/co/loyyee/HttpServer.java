@@ -1,15 +1,15 @@
 package co.loyyee;
 
-import co.loyyee.enums.HeaderKey;
 import co.loyyee.enums.HttpMethod;
 
+import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.net.SocketTimeoutException;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.logging.Logger;
 
 import static co.loyyee.enums.HeaderKey.ContentType;
 import static co.loyyee.enums.HttpMethod.*;
@@ -37,7 +37,8 @@ import static co.loyyee.enums.HttpMethod.*;
  * <h4> Step 4.</h4>
  * {@link SocketHandler} - Setup handler for income and outgoing message
  *
- *
+ * <h4> Step 5.</h4>
+ * {@link FileHandler} - FileHandler will handle all different request with responding html file.
  * */
 public class HttpServer{
 	/**
@@ -45,7 +46,7 @@ public class HttpServer{
 	 * GET, POST, HEAD
 	 * */
 	private Map<String, Map<String, Handler> > handlers;
-	private int port;
+	final private int port;
 	public HttpServer() {
 		this.port = 8888;
 	}
@@ -60,59 +61,64 @@ public class HttpServer{
 	 * we will be using java core library Logger, to log out the event.
 	 * */
 	public void start() throws IOException {
-		ServerSocket socket = new ServerSocket(this.port);
-		Log.info("Listing on port: " + this.port);
-		Socket client;
-		/* keep the connection alive */
-		while((client = socket.accept())!= null) {
-			Log.write("Received connection from " + client.getRemoteSocketAddress().toString(), true);
-			SocketHandler handler = new SocketHandler(client, handlers);
-			Thread t = new Thread(handler);
-			t.start();
+		try (ServerSocket socket = new ServerSocket(this.port)) {
+			Log.info("Listing on port: " + this.port);
+			Socket client;
+			/* keep the connection alive */
+			while((client = socket.accept())!= null) {
+				Log.write("Received connection from " + client.getRemoteSocketAddress().toString(), true);
+				SocketHandler handler = new SocketHandler(client, handlers);
+				Thread t = new Thread(handler);
+				t.start();
+			}
+		} catch (SocketTimeoutException e) {
+			Log.write(e.getMessage(), true);
 		}
+
 	}
 
 	public void addHandler(HttpMethod method, String path, Handler handler) {
-		Map<String, Handler> methodHandlers =  handlers.get(method.name());
-		if (methodHandlers == null) {
-			methodHandlers = new HashMap<>();
-			handlers.put(method.name(), methodHandlers);
-		}
+		Map<String, Handler> methodHandlers = handlers.computeIfAbsent(method.name(), k -> new HashMap<>());
 		methodHandlers.put(path, handler);
+		// old way
+//		Map<String, Handler> methodHandlers =  handlers.get(method.name());
+//		if (methodHandlers == null) {
+//			methodHandlers = new HashMap<>();
+//			handlers.put(method.name(), methodHandlers);
+//		}
+//		methodHandlers.put(path, handler);
 	}
 	public static void main(String[] args) {
 		HttpServer server = new HttpServer(8080);
 		try{
 
 			server.addHandler(GET, "/hello", ((request, response) -> {
-						String html = "It works, " + request.getParameter("name") + "";
+						String html = "It works, " + request.getParameter("name");
 						response.setResponseCode(200, "OK");
 						response.addHeader(ContentType, "text/html");
 						response.addBody(html);
 					})
 			);
 			server.addHandler(GET, "/*" , new FileHandler());
-			server.addHandler(POST, "/login", new Handler() {
-				public void handle(Request request, Response response) throws IOException {
-					StringBuffer buf = new StringBuffer();
-					InputStream in = request.getBody();
-					int c;
-					while ((c = in.read()) != -1) {
-						buf.append((char) c);
-					}
-					String[] components = buf.toString().split("&");
-					Map<String, String> urlParameters = new HashMap<String, String>();
-					for (String component : components) {
-						String[] pieces = component.split("=");
-						urlParameters.put(pieces[0], pieces[1]);
-					}
-					String html = "<body>Welcome, " + urlParameters.get("username") + "</body>";
 
-					response.setResponseCode(200, "OK");
-					response.addHeader(ContentType, "text/html");
-					response.addBody(html);
+			server.addHandler(POST, "/login", ((request, response) -> {
+				StringBuilder stringBuilder = new StringBuilder();
+				BufferedReader bufR = new BufferedReader(new InputStreamReader(request.getBody()));
+				String line;
+				while( (line = bufR.readLine()) != null){
+					stringBuilder.append(line);
 				}
-			});
+				String[] components = stringBuilder.toString().split("&");
+				Map<String, String> urlParam = new HashMap<>();
+				for(String part : components) {
+					String[] pieces = part.split("=")	;
+					urlParam.put(pieces[0], pieces[1]);
+				}
+				String html = "<body>Welcome, " + urlParam.get("username") + "</body>";
+				response.setResponseCode(200, "OK");
+				response.addHeader(ContentType, "text/html");
+				response.addBody(html);
+			}));
 
 			server.start();
 		} catch	(IOException e ) {

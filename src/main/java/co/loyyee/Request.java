@@ -7,7 +7,6 @@ import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.StringTokenizer;
-import java.util.logging.Logger;
 
 
 /**
@@ -29,12 +28,10 @@ public class Request {
 	private String method;
 	private String path;
 	private String fullUrl;
-	private Map<String, String> headers = new HashMap<>();
-	private Map<String, String> queryParam = new HashMap<>();
-	private Map<String, String> cookies = new HashMap<>();
-	private BufferedReader in;
-	private static Logger log = Logger.getLogger("co.loyyee.request");
-
+	final private Map<String, String> headers = new HashMap<>();
+	final private Map<String, String> queryParam = new HashMap<>();
+	final private Map<String, String> cookies = new HashMap<>();
+	final private BufferedReader in;
 
 	public Request(BufferedReader in) {
 		this.in = in;
