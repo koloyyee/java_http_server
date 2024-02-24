@@ -5,7 +5,6 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
-import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
@@ -28,8 +27,8 @@ public class Log {
 	/**
 	 * @param log the message coming from system;
 	 * @param print to log out the message
-	 *
-	 *                Note: for date we need to use new Date() for SimpleDateFormat
+	 *<br>
+	 * Note: for date we need to use new Date() for SimpleDateFormat
 	 * */
 	public static void write(String log, boolean print) {
 		String msg = fmt.format(new Date()) + " " + log;

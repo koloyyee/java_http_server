@@ -1,5 +1,6 @@
 package co.loyyee;
 
+import co.loyyee.enums.HeaderKey;
 import co.loyyee.enums.HttpMethod;
 
 import java.io.IOException;
@@ -10,6 +11,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Logger;
 
+import static co.loyyee.enums.HeaderKey.ContentType;
 import static co.loyyee.enums.HttpMethod.*;
 
 /**
@@ -85,7 +87,7 @@ public class HttpServer{
 			server.addHandler(GET, "/hello", ((request, response) -> {
 						String html = "It works, " + request.getParameter("name") + "";
 						response.setResponseCode(200, "OK");
-						response.addHeader("Content-Type", "text/html");
+						response.addHeader(ContentType, "text/html");
 						response.addBody(html);
 					})
 			);
@@ -107,7 +109,7 @@ public class HttpServer{
 					String html = "<body>Welcome, " + urlParameters.get("username") + "</body>";
 
 					response.setResponseCode(200, "OK");
-					response.addHeader("Content-Type", "text/html");
+					response.addHeader(ContentType, "text/html");
 					response.addBody(html);
 				}
 			});

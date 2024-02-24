@@ -1,8 +1,12 @@
 package co.loyyee;
 
+import co.loyyee.enums.HeaderKey;
+
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.*;
+
+import static co.loyyee.enums.HeaderKey.*;
 
 public class Response {
 final	private OutputStream out;
@@ -27,18 +31,22 @@ private int statusCode;
 		List<String> headerValues = this.headers.computeIfAbsent(headerKey, k -> new ArrayList<>());
 		headerValues.add(headerValue);
 	}
+	public void addHeader(HeaderKey headerKey, String headerValue) {
+		List<String> headerValues = this.headers.computeIfAbsent(headerKey.value, k -> new ArrayList<>());
+		headerValues.add(headerValue);
+	}
 
 	public void addBody(String body) {
-		addHeader("Content-Length", Integer.toString(body.length()));
+		addHeader(ContentLength, Integer.toString(body.length()));
 		this.body = body;
 	}
 	public void addCookie(Cookie cookie) {
-		addHeader("Set-Cookie", cookie.toString());
+		addHeader(SetCookie, cookie.toString());
 	}
 
 	/**  "\r\n" is the CR-LF */
 	public void send() throws IOException {
-		addHeader("Connect", "Close");
+		addHeader(Connection, "Close");
 		String responseMsg = ("HTTP/1.1 " + this.statusCode + " " + this.statusMessage + "\r\n");
 		out.write(responseMsg.getBytes());
 		Log.write(responseMsg.trim(), true);

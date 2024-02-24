@@ -5,6 +5,8 @@ import java.io.InputStream;
 import java.io.Reader;
 import java.util.Map;
 
+import static co.loyyee.enums.HeaderKey.ContentLength;
+
 public class HttpInputStream extends InputStream {
 	private Reader source;
 	private int byteRemaining;
@@ -19,7 +21,7 @@ public class HttpInputStream extends InputStream {
 
 	public HttpInputStream(Reader source, Map<String, String> headers) throws IOException {
 		this.source = source;
-		String contentLength = headers.get("Content-Length").trim();
+		String contentLength = headers.get(ContentLength.value).trim();
 		if(contentLength != null) {
 			try {
 				byteRemaining = Integer.parseInt(contentLength);

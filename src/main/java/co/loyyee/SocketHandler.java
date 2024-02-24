@@ -1,5 +1,7 @@
 package co.loyyee;
 
+import co.loyyee.enums.HeaderKey;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -7,6 +9,8 @@ import java.io.OutputStream;
 import java.net.Socket;
 import java.net.SocketTimeoutException;
 import java.util.Map;
+
+import static co.loyyee.enums.HeaderKey.Connection;
 
 
 /**
@@ -58,7 +62,7 @@ public class SocketHandler implements Runnable {
 				} catch (SocketTimeoutException e) {
 					break;
 				}
-				if ("close".equalsIgnoreCase(request.getHeader("connection"))) {
+				if ("close".equalsIgnoreCase(request.getHeader(Connection.value))) {
 					done = true;
 				}
 
@@ -89,7 +93,7 @@ public class SocketHandler implements Runnable {
 						respond(404, "Not Found.", out);
 					}
 				}
-				request.getHeader("connection");
+				request.getHeader("Connection");
 				response.send();
 			}
 //			socket.close();

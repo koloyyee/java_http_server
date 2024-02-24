@@ -1,7 +1,11 @@
 package co.loyyee;
 
+import co.loyyee.enums.HeaderKey;
+
 import java.io.*;
 import java.util.logging.Logger;
+
+import static co.loyyee.enums.HeaderKey.ContentType;
 
 /**
  *  Responding with a text/html file
@@ -19,7 +23,7 @@ public class FileHandler implements Handler {
 						stringBuilder.append(str);
 					}
 				response.setResponseCode(200, "OK");
-				response.addHeader("Content-Type", "text/html");
+				response.addHeader(ContentType.value, "text/html");
 				response.addBody(stringBuilder.toString());
 			} catch (IOException e) {
 
@@ -30,7 +34,7 @@ public class FileHandler implements Handler {
 					stringBuilder.append(str);
 				}
 				response.setResponseCode(404, "Not Found");
-				response.addHeader("Content-Type", "text/html");
+				response.addHeader(ContentType.value, "text/html");
 				response.addBody(stringBuilder.toString());
 			}
 		}

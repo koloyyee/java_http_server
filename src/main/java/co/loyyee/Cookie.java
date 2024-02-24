@@ -20,13 +20,13 @@ import java.util.Date;
 public class Cookie {
 	final private String name;
 	final private String value;
-	private Date expires;
-	private Integer maxAge;
-	private String domain;
-	private String path;
-	private boolean secure;
-	private boolean httpOnly;
-	private String sameSite;
+	private final Date expires;
+	private final Integer maxAge;
+	private final String domain;
+	private final String path;
+	private final boolean secure;
+	private final boolean httpOnly;
+	private final String sameSite;
 
 	public Cookie(String name, String value, Date expires, Integer maxAge, String domain, String path, boolean secure, boolean httpOnly, String sameSite) {
 		this.name = name;
