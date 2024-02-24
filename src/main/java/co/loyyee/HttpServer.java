@@ -1,8 +1,12 @@
 package co.loyyee;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.logging.Logger;
 
 /**
@@ -16,12 +20,27 @@ import java.util.logging.Logger;
  * and how to parse the HTTP protocol.
  *
  * <h3>================Project Breakdown===========</h3>
+ * <h4> Step 1.</h4>
+ * {@link HttpServer} <p> Create a socket and listen to the HTTP Request </p>
  *
- * 1. Create a socket, listen to port
+ * <h4> Step 2.</h4>
+ * {@link Request} - Handling income HTTP Request with BufferedReader
+ *
+ * <h4> Step 3.</h4>
+ * {@link Response} - Handling outgoing Http Response with PrintWriter
+ *
+ * <h4> Step 4.</h4>
+ * {@link SocketHandler} - Setup handler for income and outgoing message
+ *
  *
  * */
 public class HttpServer{
-	private static Logger log = Logger.getLogger("co.loyye.server");
+	private static Logger log = Logger.getLogger("co.loyyee.server");
+	/**
+	 * This is a Map Method(String) with Map Path(String) with associated Method Handler({@link Handler}).
+	 * GET, POST, HEAD
+	 * */
+	private Map<String, Map<String, Handler> > handlers;
 	private int port;
 	public HttpServer() {
 		this.port = 8888;
@@ -29,6 +48,7 @@ public class HttpServer{
 
 	public HttpServer(int port) {
 		this.port = port;
+		this.handlers = new HashMap<>();
 	}
 
 	/**
@@ -37,8 +57,7 @@ public class HttpServer{
 	 * */
 	public void start() throws IOException {
 		ServerSocket socket = new ServerSocket(this.port);
-		log.fine("everything is fine with " + this.port );
-
+		log.info("Listening on port: " + this.port);
 		Socket client;
 		/** keep the connection alive */
 		while((client = socket.accept())!= null) {
@@ -47,14 +66,35 @@ public class HttpServer{
 			Thread t = new Thread(handler);
 			t.start();
 		}
+	}
 
+	public void addHandler(String method, String path, Handler handler) {
+		Map<String, Handler> methodHandlers =  handlers.get(method);
+		if (methodHandlers == null) {
+			methodHandlers = new HashMap<>();
+			handlers.put(method, methodHandlers);
+		}
+		methodHandlers.put(path, handler);
 	}
 	public static void main(String[] args) {
-		HttpServer s = new HttpServer();
-		try {
-			s.start();
-		} catch (IOException e) {
-			log.warning(e.getMessage());
+		HttpServer server = new HttpServer(8080);
+		try{
+
+			server.addHandler("GET", "/hello", new Handler() {
+				@Override
+				public void handle(Request request, Response response) throws IOException {
+					String html = "It works, " + request.getParameter("name") + "";
+					response.setResponseCode(200, "OK");
+					response.addHeader("Content-Type", "text/html");
+					response.addBody(html);
+				}
+			});
+			server.addHandler("GET", "/*" , new FileHandler());
+			server.start();
+		} catch	(IOException e ) {
+			System.out.println(e.getMessage());
+		} finally {
+			System.out.println("Server shutting down.");
 		}
 	}
 }
