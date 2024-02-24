@@ -3,6 +3,7 @@ package co.loyyee;
 
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.StringTokenizer;
@@ -58,6 +59,13 @@ public class Request {
 		return queryParam.get(paramName);
 	}
 
+
+	/**
+	 * Handling Post request and read the body
+	 * */
+	public InputStream getBody()  throws IOException {
+		return new HttpInputStream(in, headers);
+	}
 
 	/**
 	 * Parsing the HTTP Request

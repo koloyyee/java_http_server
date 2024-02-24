@@ -3,13 +3,14 @@ package co.loyyee;
 import co.loyyee.enums.HttpMethod;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Logger;
 
-import static co.loyyee.enums.HttpMethod.GET;
+import static co.loyyee.enums.HttpMethod.*;
 
 /**
  * <h3>================Introduction=======</h3>
@@ -91,6 +92,28 @@ public class HttpServer{
 					})
 			);
 			server.addHandler(GET, "/*" , new FileHandler());
+			server.addHandler(POST, "/login", new Handler() {
+				public void handle(Request request, Response response) throws IOException {
+					StringBuffer buf = new StringBuffer();
+					InputStream in = request.getBody();
+					int c;
+					while ((c = in.read()) != -1) {
+						buf.append((char) c);
+					}
+					String[] components = buf.toString().split("&");
+					Map<String, String> urlParameters = new HashMap<String, String>();
+					for (String component : components) {
+						String[] pieces = component.split("=");
+						urlParameters.put(pieces[0], pieces[1]);
+					}
+					String html = "<body>Welcome, " + urlParameters.get("username") + "</body>";
+
+					response.setResponseCode(200, "OK");
+					response.addHeader("Content-Type", "text/html");
+					response.addBody(html);
+				}
+			});
+
 			server.start();
 		} catch	(IOException e ) {
 			System.out.println(e.getMessage());

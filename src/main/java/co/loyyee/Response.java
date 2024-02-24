@@ -29,7 +29,7 @@ public class Response {
 	}
 
 	public void addBody(String body) {
-		this.headers.put("Content-length", Integer.toString(body.length()));
+		this.headers.put("Content-Length", Integer.toString(body.length()));
 		this.body = body;
 	}
 

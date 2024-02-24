@@ -12,6 +12,7 @@ public class FileHandler implements Handler {
 	public void handle(Request request, Response response) throws IOException {
 			try (BufferedReader in = new BufferedReader(new FileReader("src/main/resources/static/" + request.getPath().substring(1)))) {
 
+				/** Use StringBuilder for fast parsing html file.*/
 				StringBuilder stringBuilder = new StringBuilder();
 					String str;
 					while( (str = in.readLine()) != null) {
