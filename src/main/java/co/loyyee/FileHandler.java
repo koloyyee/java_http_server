@@ -23,7 +23,11 @@ public class FileHandler implements Handler {
 						stringBuilder.append(str);
 					}
 				response.setResponseCode(200, "OK");
-				response.addHeader(ContentType.value, "text/html");
+					switch(request.getPath()) {
+						case "html" -> response.addHeader(ContentType.value, "text/html");
+						case "css" -> response.addHeader(ContentType.value, "text/css");
+					}
+
 				response.addBody(stringBuilder.toString());
 			} catch (IOException e) {
 
