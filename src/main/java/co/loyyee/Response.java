@@ -16,6 +16,7 @@ public class Response {
 	public Response(OutputStream out) {
 		this.headers = new HashMap<>();
 		this.out = out;
+
 	}
 
 	public void setResponseCode(int statusCode, String statusMessage) {

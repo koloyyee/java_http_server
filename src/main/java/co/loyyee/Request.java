@@ -3,7 +3,6 @@ package co.loyyee;
 
 import java.io.BufferedReader;
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.StringTokenizer;
@@ -129,7 +128,7 @@ public class Request {
 			}
 			/** Home page */
 			if ("/".equals(this.path)) {
-				this.path = "index.html";
+				this.path = "/index.html";
 			}
 		return true;
 	}

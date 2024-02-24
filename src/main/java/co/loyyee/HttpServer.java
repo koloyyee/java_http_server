@@ -1,13 +1,15 @@
 package co.loyyee;
 
-import java.io.BufferedReader;
+import co.loyyee.enums.HttpMethod;
+
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Logger;
+
+import static co.loyyee.enums.HttpMethod.GET;
 
 /**
  * <h3>================Introduction=======</h3>
@@ -57,6 +59,7 @@ public class HttpServer{
 	 * */
 	public void start() throws IOException {
 		ServerSocket socket = new ServerSocket(this.port);
+//		socket.setSoTimeout(10000);
 		log.info("Listening on port: " + this.port);
 		Socket client;
 		/** keep the connection alive */
@@ -68,11 +71,11 @@ public class HttpServer{
 		}
 	}
 
-	public void addHandler(String method, String path, Handler handler) {
-		Map<String, Handler> methodHandlers =  handlers.get(method);
+	public void addHandler(HttpMethod method, String path, Handler handler) {
+		Map<String, Handler> methodHandlers =  handlers.get(method.name());
 		if (methodHandlers == null) {
 			methodHandlers = new HashMap<>();
-			handlers.put(method, methodHandlers);
+			handlers.put(method.name(), methodHandlers);
 		}
 		methodHandlers.put(path, handler);
 	}
@@ -80,16 +83,14 @@ public class HttpServer{
 		HttpServer server = new HttpServer(8080);
 		try{
 
-			server.addHandler("GET", "/hello", new Handler() {
-				@Override
-				public void handle(Request request, Response response) throws IOException {
-					String html = "It works, " + request.getParameter("name") + "";
-					response.setResponseCode(200, "OK");
-					response.addHeader("Content-Type", "text/html");
-					response.addBody(html);
-				}
-			});
-			server.addHandler("GET", "/*" , new FileHandler());
+			server.addHandler(GET, "/hello", ((request, response) -> {
+						String html = "It works, " + request.getParameter("name") + "";
+						response.setResponseCode(200, "OK");
+						response.addHeader("Content-Type", "text/html");
+						response.addBody(html);
+					})
+			);
+			server.addHandler(GET, "/*" , new FileHandler());
 			server.start();
 		} catch	(IOException e ) {
 			System.out.println(e.getMessage());

@@ -57,14 +57,22 @@ public class SocketHandler implements Runnable {
 				respond(405, "Method not supported", out);
 				return;
 			}
+
+//			boolean foundPath = false;
 			for(String handlerPath: methodsHandler.keySet()){
 				if(handlerPath.equals(request.getPath())){
 					methodsHandler.get(request.getPath()).handle(request, response); // TODO: we can split it up, similar to what Express does.
 					response.send();
 					foundHandler = true;
+//					foundPath = true;
 					break;
 				}
 			}
+//			if (!foundPath ) {
+//				respond(404, "Not Found.", out);
+//				response.send();
+//				return;
+//			}
 			if(!foundHandler) {
 				if (methodsHandler.get("/*") != null) {
 
