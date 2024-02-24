@@ -2,15 +2,14 @@ package co.loyyee;
 
 import java.io.IOException;
 import java.io.OutputStream;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class Response {
 	private OutputStream out;
 	private int statusCode;
 	private String statusMessage;
-	private Map<String, String> headers;
+	/** expecting to handle multiple cookies values **/
+	private Map<String, List<String>> headers;
 	private String body;
 
 	public Response(OutputStream out) {
@@ -25,20 +24,31 @@ public class Response {
 	}
 
 	public void addHeader(String headerKey, String headerValue) {
-		this.headers.put(headerKey, headerValue);
+		List<String> headerValues = this.headers.get(headerKey);
+		if(headerValues == null)	 {
+			headerValues = new ArrayList<>();
+			this.headers.put(headerKey, headerValues);
+		}
+		headerValues.add(headerValue);
 	}
 
 	public void addBody(String body) {
-		this.headers.put("Content-Length", Integer.toString(body.length()));
+		addHeader("Content-Length", Integer.toString(body.length()));
 		this.body = body;
 	}
+//	public void addCookie(Cookie cookie) {
+//		addHeader("Set-Cookie", cookie.toString());
+//	}
 
 	public void send() throws IOException {
-		this.headers.put("Connect", "Close");
+		addHeader("Connect", "Close");
 		/**  "\r\n" is the CR-LF */
 		out.write(("HTTP/1.1 " + this.statusCode + " " + this.statusMessage + "\r\n").getBytes());
 		for ( String headerName : headers.keySet()) {
-			out.write(( headerName  + ": " + this.headers.get(headerName) + "\r\n" ).getBytes());
+			Iterator<String > headerValues = headers.get(headerName).iterator();
+			while(headerValues.hasNext()) {
+				out.write((headerName + ": " + this.headers.get(headerName) + "\r\n").getBytes());
+			}
 		}
 		out.write("\r\n".getBytes());
 		if (body != null) {

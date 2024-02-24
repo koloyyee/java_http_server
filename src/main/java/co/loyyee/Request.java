@@ -31,6 +31,7 @@ public class Request {
 	private String fullUrl;
 	private Map<String, String> headers = new HashMap<>();
 	private Map<String, String> queryParam = new HashMap<>();
+	private Map<String, String> cookies = new HashMap<>();
 	private BufferedReader in;
 	private static Logger log = Logger.getLogger("co.loyyee.request");
 
@@ -59,6 +60,9 @@ public class Request {
 		return queryParam.get(paramName);
 	}
 
+	public String getCookie(String cookieName) {
+		return cookies.get(cookieName);
+	}
 
 	/**
 	 * Handling Post request and read the body
@@ -119,6 +123,14 @@ public class Request {
 					return false;
 				}
 				headers.put(headerLine.substring(0, delimiterIdx), headerLine.substring(delimiterIdx + 1));
+
+				/** parsing Cookie values */
+				String name = headerLine.substring(0, delimiterIdx );
+				String value = headerLine.substring(delimiterIdx + 2);
+				headers.put(name, value);
+				if("Cookie".equals(name)) {
+					parseCookie(value);
+				}
 			}
 
 			/** handle query
@@ -167,4 +179,15 @@ public class Request {
 			}
 		}
 	}
+	public void parseCookie(String cookieString ) {
+		String[] cookiePairs =  cookieString.split("; ");
+		for(int i = 0; i < cookiePairs.length; i++) {
+			if(cookiePairs[i].length() < 1024) {
+				System.out.println(cookiePairs[i].length());
+				String[] cookieValue = cookiePairs[i].split("=");
+				cookies.put(cookieValue[0], cookieValue[1]);
+			}
+		}
+	}
+
 }
