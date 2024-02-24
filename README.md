@@ -1,5 +1,9 @@
 # Build My Own Mini Http Server
 
+## Result:
+![](https://media.giphy.com/media/AeeeCQxhkUNwJwVFGi/giphy.gif)
+
+
 ## Goal
 The goal of this project is to further understand the mechanism of how HTTP networking programming works.
 As a web programming, the HTTP server is the gateway to the world therefore understanding 
