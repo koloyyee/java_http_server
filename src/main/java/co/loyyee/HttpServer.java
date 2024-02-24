@@ -38,7 +38,6 @@ import static co.loyyee.enums.HttpMethod.*;
  *
  * */
 public class HttpServer{
-	private static Logger log = Logger.getLogger("co.loyyee.server");
 	/**
 	 * This is a Map Method(String) with Map Path(String) with associated Method Handler({@link Handler}).
 	 * GET, POST, HEAD
@@ -60,12 +59,11 @@ public class HttpServer{
 	 * */
 	public void start() throws IOException {
 		ServerSocket socket = new ServerSocket(this.port);
-//		socket.setSoTimeout(10000);
-		log.info("Listening on port: " + this.port);
+		Log.info("Listing on port: " + this.port);
 		Socket client;
-		/** keep the connection alive */
+		/* keep the connection alive */
 		while((client = socket.accept())!= null) {
-			log.info("Received connection from " + client.getRemoteSocketAddress().toString());
+			Log.write("Received connection from " + client.getRemoteSocketAddress().toString(), true);
 			SocketHandler handler = new SocketHandler(client, handlers);
 			Thread t = new Thread(handler);
 			t.start();
@@ -116,7 +114,7 @@ public class HttpServer{
 
 			server.start();
 		} catch	(IOException e ) {
-			System.out.println(e.getMessage());
+			Log.write(e.getMessage(), true);
 		} finally {
 			System.out.println("Server shutting down.");
 		}

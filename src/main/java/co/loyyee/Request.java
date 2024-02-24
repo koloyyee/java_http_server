@@ -66,8 +66,8 @@ public class Request {
 
 	/**
 	 * Handling Post request and read the body
-	 * */
-	public InputStream getBody()  throws IOException {
+	 */
+	public InputStream getBody() throws IOException {
 		return new HttpInputStream(in, headers);
 	}
 
@@ -83,20 +83,19 @@ public class Request {
 	 **/
 	public boolean parse() throws IOException {
 		String initialLine = in.readLine();
-		log.info(initialLine);
+		Log.write(initialLine, true);
 
-		/**
+		/*
 		 * Parsing the HTTP Request by tokenization
 		 * StringTokenizer constructor will handle: " \t\n\r\f"
 		 * The header will contain <em> CR-LF </em> with "\r\n"
 		 * {@link StringTokenizer(String str)}
 		 * **/
-		/** */
 		StringTokenizer token = new StringTokenizer(initialLine);
-		/** why 3?
+		/* why 3?
 		 * GET <- 1
 		 * /hello.html <- 2
-		 * HTTP/1.1 <- 33
+		 * HTTP/1.1 <- 3
 		 * */
 		String[] components = new String[3];
 		for (int i = 0; i < components.length; i++) {
@@ -106,59 +105,59 @@ public class Request {
 				return false;
 			}
 		}
-			/** e.g.: GET POST */
-			this.method = components[0];
-			/** URI */
-			this.fullUrl = components[1];
+		/* e.g.: GET POST */
+		this.method = components[0];
+		/* URI e.g.: /hello.html */
+		this.fullUrl = components[1];
 
-			/** With unknown size for the HTTP Request we will use while loop*/
-			while (true) {
-				String headerLine = in.readLine();
-				System.out.println(headerLine);
-				if (headerLine.isEmpty()) {
-					break;
-				}
-				int delimiterIdx = headerLine.indexOf(":");
-				if (delimiterIdx == -1) {
-					return false;
-				}
-				headers.put(headerLine.substring(0, delimiterIdx), headerLine.substring(delimiterIdx + 1));
+		/* With unknown size for the HTTP Request we will use while loop*/
+		while (true) {
+			String headerLine = in.readLine();
+			System.out.println(headerLine);
+			if (headerLine.isEmpty()) {
+				break;
+			}
+			int delimiterIdx = headerLine.indexOf(":");
+			if (delimiterIdx == -1) {
+				return false;
+			}
+			headers.put(headerLine.substring(0, delimiterIdx), headerLine.substring(delimiterIdx + 1));
 
-				/** parsing Cookie values */
-				String name = headerLine.substring(0, delimiterIdx );
-				String value = headerLine.substring(delimiterIdx + 2);
-				headers.put(name, value);
-				if("Cookie".equals(name)) {
-					parseCookie(value);
-				}
+			/* parsing Cookie values */
+			String name = headerLine.substring(0, delimiterIdx);
+			String value = headerLine.substring(delimiterIdx + 2);
+			headers.put(name, value);
+			if ("Cookie".equals(name)) {
+				parseCookie(value);
 			}
+		}
 
-			/** handle query
-			 * e.g.:
-			 * <p>POST /test.html?query=alibaba HTTP/1.1</p>
-			 * */
-			if (components[1].indexOf("?") == -1) {
-				/** case when no query parameter */
-				this.path = components[1];
-			} else {
-				/** case when with query parameter */
-				/** we are slicing the URI by the ? */
-				this.path = components[1].substring(0, components[1].indexOf("?"));
-				parseQueryParam(components[1].substring(components[1].indexOf("?") + 1));
-			}
-			/** Home page */
-			if ("/".equals(this.path)) {
-				this.path = "/index.html";
-			}
+		/*
+		 * handle query
+		 * e.g.:
+		 * <p>POST /test.html?query=alibaba HTTP/1.1</p>
+		 * */
+		if (!components[1].contains("?")) {
+			/* case when no query parameter */
+			this.path = components[1];
+		} else {
+			/* case when with query parameter */
+			/* we are slicing the URI by the ? */
+			this.path = components[1].substring(0, components[1].indexOf("?"));
+			parseQueryParam(components[1].substring(components[1].indexOf("?") + 1));
+		}
+		/* Home page */
+		if ("/".equals(this.path)) {
+			this.path = "/index.html";
+		}
 		return true;
 	}
 
 	/**
-	 *
 	 * <p>POST /test.html?query=alibaba HTTP/1.1</p>
 	 * The full query parameter will be query=alibaba
 	 * when there are more than 1 will there will be connect by "&"
-	 * **/
+	 **/
 	public void parseQueryParam(String queryParam) {
 
 		/**
@@ -167,26 +166,25 @@ public class Request {
 		 * e.g.:
 		 *  first_name=David&last_name=Ko&age=30
 		 * */
-		for(String param : queryParam.split("&")) {
-			/** first_name=David **/
-			/** why use indexOf + substring instead of split because we can save memory */
+		for (String param : queryParam.split("&")) {
+			/* first_name=David **/
+			/* why use indexOf + substring instead of split because we can save memory */
 			int delimiterIdx = param.indexOf("=");
-			/** queryParam Key = name Value = David **/
-			if(delimiterIdx != -1) {
-				this.queryParam.put(param.substring(0, delimiterIdx), param.substring(delimiterIdx+1));
+			/* queryParam Key = name Value = David **/
+			if (delimiterIdx != -1) {
+				this.queryParam.put(param.substring(0, delimiterIdx), param.substring(delimiterIdx + 1));
 			} else {
 				this.queryParam.put(param, null); // TODO: Should be null or ""?
 			}
 		}
 	}
-	public void parseCookie(String cookieString ) {
-		String[] cookiePairs =  cookieString.split("; ");
-		for(int i = 0; i < cookiePairs.length; i++) {
-			if(cookiePairs[i].length() < 1024) {
-				System.out.println(cookiePairs[i].length());
-				String[] cookieValue = cookiePairs[i].split("=");
-				cookies.put(cookieValue[0], cookieValue[1]);
-			}
+
+	public void parseCookie(String cookieString) {
+		String[] cookiePairs = cookieString.split("; ");
+		for (int i = 0; i < cookiePairs.length; i++) {
+			System.out.println(cookiePairs[i].length());
+			String[] cookieValue = cookiePairs[i].split("=");
+			cookies.put(cookieValue[0], cookieValue[1]);
 		}
 	}
 

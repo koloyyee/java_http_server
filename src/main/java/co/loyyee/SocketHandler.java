@@ -24,7 +24,7 @@ public class SocketHandler implements Runnable {
 
 	public void respond(int statusCode, String message, OutputStream out) throws IOException {
 		String responseMsg = "HTTP/1.1 " + statusCode + " " + message + "\r\n\r\n";
-		System.out.println(responseMsg);
+		Log.write(responseMsg, true);
 		out.write(responseMsg.getBytes());
 	}
 
@@ -92,8 +92,12 @@ public class SocketHandler implements Runnable {
 				request.getHeader("connection");
 				response.send();
 			}
+//			socket.close();
 		} catch (IOException e) {
 			System.out.println(e.getMessage());
+		} finally {
+			Log.save(true);
 		}
+
 	}
 }

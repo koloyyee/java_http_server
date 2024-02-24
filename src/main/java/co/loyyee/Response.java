@@ -5,11 +5,11 @@ import java.io.OutputStream;
 import java.util.*;
 
 public class Response {
-	private OutputStream out;
-	private int statusCode;
+final	private OutputStream out;
+private int statusCode;
 	private String statusMessage;
 	/** expecting to handle multiple cookies values **/
-	private Map<String, List<String>> headers;
+	final private Map<String, List<String>> headers;
 	private String body;
 
 	public Response(OutputStream out) {
@@ -24,11 +24,7 @@ public class Response {
 	}
 
 	public void addHeader(String headerKey, String headerValue) {
-		List<String> headerValues = this.headers.get(headerKey);
-		if(headerValues == null)	 {
-			headerValues = new ArrayList<>();
-			this.headers.put(headerKey, headerValues);
-		}
+		List<String> headerValues = this.headers.computeIfAbsent(headerKey, k -> new ArrayList<>());
 		headerValues.add(headerValue);
 	}
 
@@ -40,10 +36,13 @@ public class Response {
 		addHeader("Set-Cookie", cookie.toString());
 	}
 
+	/**  "\r\n" is the CR-LF */
 	public void send() throws IOException {
 		addHeader("Connect", "Close");
-		/**  "\r\n" is the CR-LF */
-		out.write(("HTTP/1.1 " + this.statusCode + " " + this.statusMessage + "\r\n").getBytes());
+		String responseMsg = ("HTTP/1.1 " + this.statusCode + " " + this.statusMessage + "\r\n");
+		out.write(responseMsg.getBytes());
+		Log.write(responseMsg.trim(), true);
+
 		for ( String headerName : headers.keySet()) {
 			Iterator<String > headerValues = headers.get(headerName).iterator();
 			while(headerValues.hasNext()) {
