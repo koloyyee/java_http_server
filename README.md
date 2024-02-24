@@ -15,6 +15,9 @@ The other goal is to have **zero or minimum** dependency mainly rely on Java's c
 ## Non-Goal
 This is not a production/commercial/industry grade project, it is a gateway for curious programmers, like myself, to learn about the how to build HTTP server from scratch in Java.
 
+## Design
+Client -> ServerSocket -> Socket (each Client) -> BufferedReader -> Parsing Messages -> OutputStream -> Client
+
 ## Explanation
 This project is based on Joshua Davies' post on mini HTTP server (see in [reference](#references)), from there I have refactored some of the code to parse string faster.
 
