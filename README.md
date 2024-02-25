@@ -1,7 +1,7 @@
 # Build My Own Mini Http Server
 
 ## Result:
-![](https://media.giphy.com/media/AeeeCQxhkUNwJwVFGi/giphy.gif)
+![](./doc/demo.gif)
 
 
 ## Goal
